@@ -1,5 +1,6 @@
 import { Outlet } from "react-router";
 import Sidebar from "../components/ui/Sidebar";
+import BottomNav from "../components/ui/BottomNav";
 
 
 const Layout= () => {
@@ -9,6 +10,7 @@ const Layout= () => {
             <div className="flex-1 overflow-y-scroll">
             <Outlet/>
             </div>
+            <BottomNav />
         </div>
     )
 }
