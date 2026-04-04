@@ -11,7 +11,7 @@ import Slider from "../components/ui/Slider";
 
 const Onboarding= () => {
     const [step, setStep] = useState(1);
-    const {user, setOnboardingComplete, fetchUser} = useAppContext();
+    const {user, setUser, setOnboardingComplete} = useAppContext();
     const [formData, setFormData] = useState<ProfileFormData>({
         age: 0,
         weight: 0,
@@ -42,10 +42,16 @@ const Onboarding= () => {
                 createdAt: new Date().toISOString(),
             };
             localStorage.setItem("fitnessuser", JSON.stringify(userData));
+
+            setUser((prev: any) => ({
+            ...prev,
+            ...userData,
+            }));
+            
             await mockApi.user.update(user?.id || "", userData as unknown as Partial<UserData>)
             toast.success("Profile Updated Successfully.");
             setOnboardingComplete(true);
-            fetchUser(user?.token || "");
+            
         }
     }
 

@@ -1,6 +1,6 @@
 export default function ProgressBar({ value, max = 100, className = '' }: { value: number; max?: number; className?: string; }) {
 
-    const percentage = Math.min(Math.round((value / max) * 100), 100);
+    const percentage =Math.max( Math.min(Math.round((value / max) * 100), 100),3);
     const isOverLimit = value > max;
 
     return (

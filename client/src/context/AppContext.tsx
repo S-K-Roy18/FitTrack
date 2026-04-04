@@ -79,18 +79,29 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-    if (token) {
-      (async () => {
-        await fetchUser(token);
-        await fetchFoodLogs();
-        await fetchActivityLogs();
-      })();
-    } else {
-      setIsUserFetched(true);
-    }
-  }, []);
+  if (token) {
+    (async () => {
+      await fetchUser(token);
+
+      // ✅ LOAD ONBOARDING DATA FROM LOCALSTORAGE
+      const fitnessData = JSON.parse(localStorage.getItem("fitnessuser") || "null");
+
+      if (fitnessData) {
+        setUser((prev: any) => ({
+          ...prev,
+          ...fitnessData,
+        }));
+      }
+
+      await fetchFoodLogs();
+      await fetchActivityLogs();
+    })();
+  } else {
+    setIsUserFetched(true);
+  }
+}, []);
 
 
   const value: AppContextType= {
