@@ -55,7 +55,7 @@ export interface FoodEntry {
     id: number | string;
     name: string;
     calories: number;
-    mealType: "breakfast" | "lunch" | "dinner" | "snack";
+    mealType: "breakfast" | "lunch" | "dinner" | "snacks";
     date: string;
     createdAt?: string;
     documentId?: string;

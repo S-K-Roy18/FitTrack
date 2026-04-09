@@ -7,6 +7,7 @@ import Input from "../components/ui/Input";
 import mockApi from "../assets/mockApi";
 import { ageRanges, goalOptions } from "../assets/assets";
 import Slider from "../components/ui/Slider";
+import api from "../configs/api";
 
 
 const Onboarding= () => {
@@ -43,14 +44,14 @@ const Onboarding= () => {
             };
             localStorage.setItem("fitnessuser", JSON.stringify(userData));
 
-            setUser((prev: any) => ({
-            ...prev,
-            ...userData,
-            }));
-            
-            await mockApi.user.update(user?.id || "", userData as unknown as Partial<UserData>)
+           try{
+            await api.put(`/api/users/${user?.id}`, userData)
             toast.success("Profile Updated Successfully.");
             setOnboardingComplete(true);
+           } catch (error: any){
+            toast.error(error.message)
+           }
+            
             
         }
     }

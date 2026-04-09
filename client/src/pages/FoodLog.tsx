@@ -9,6 +9,7 @@ import Input from "../components/ui/Input";
 import Select from "../components/ui/Select";
 import mockApi from "../assets/mockApi";
 import { toast } from "react-hot-toast/headless";
+import api from "../configs/api";
 
 const FoodLog= () => {
     const {allFoodLogs, setAllFoodLogs} = useAppContext();
@@ -33,22 +34,33 @@ const FoodLog= () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const {data }= await mockApi.foodLogs.create({data: formData});
-        setAllFoodLogs(prev => [...prev, data]);
-        setFormData({ name: "", calories: 0, mealType:"breakfast" });
-        setShowForm(false);
+
+        if(!formData.name.trim() || !formData.calories || formData.calories <= 0 || !formData){
+            return toast.error('Please enter valid data.')
+        }
+
+        try{
+            const {data }= await api.post('/api/food-logs', {data: formData})
+            setAllFoodLogs(prev => [...prev, data]);
+            setFormData({ name: "", calories: 0, mealType:"breakfast" });
+            setShowForm(false);
+        } catch (error: any){
+            console.log(error);
+            toast.error(error?.response?.data?.error?.message || error?.message);
+        }
+
      }
 
         const handelDelete = async (documentId: string) => {
             try{
                 const confirm = window.confirm("Are you sure you want to delete this entry?");
                 if(!confirm) return;
-                await mockApi.foodLogs.delete(documentId);
+                await api.delete(`/api/food-logs/${documentId}`)
                 setAllFoodLogs(prev => prev.filter((e) => e.documentId !== documentId));
             }
             catch(error: any){
                 console.log( error);
-                toast.error(error?.message || "Failed to delete entry. Please try again.");
+                toast.error(error?.response?.data?.error?.message || error?.message);
             }
             }
         
@@ -56,17 +68,30 @@ const FoodLog= () => {
      const totalCalories= entries.reduce((sum, e) => sum + e.calories, 0);
 
      //Group entries by meal type
-     const groupedEntries :Record<'breakfast' | 'lunch' | 'dinner' | 'snacks', FoodEntry[]> = entries.reduce((acc, entry) => {
-        if(!acc[entry.mealType]) acc[entry.mealType] = [];
-        acc[entry.mealType].push(entry);
-        return acc;
-     }, {} as Record<'breakfast' | 'lunch' | 'dinner' | 'snacks', FoodEntry[]>);
+     const groupedEntries: Record<'breakfast' | 'lunch' | 'dinner' | 'snacks', FoodEntry[]> =
+    entries.reduce((acc: Record<'breakfast' | 'lunch' | 'dinner' | 'snacks', FoodEntry[]>, entry) => {
+        const key = entry.mealType as 'breakfast' | 'lunch' | 'dinner' | 'snacks';
 
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(entry);
+
+        return acc;
+    }, {
+        breakfast: [],
+        lunch: [],
+        dinner: [],
+        snacks: []
+    });
      const handelQuickAdd = (activityName: string) => {
+    const lower = activityName.toLowerCase();
+
+    const fixedMealType = lower === "snack" ? "snacks" : lower;
+
     setFormData({
         ...formData,
-        mealType: activityName.toLowerCase() as any
+        mealType: fixedMealType as any
     });
+
     setShowForm(true);
 }
 
@@ -74,6 +99,44 @@ const FoodLog= () => {
     const file = e.target.files?.[0];
     if (!file) return;
     // Implemnent image analysis
+    setLoading(true)
+    const formData = new FormData();
+    formData.append('image', file)
+    try{
+        const {data}= await api.post('/api/image-analysis', formData);
+        const result =data.result;
+        let mealType = '';
+
+        const hour = new Date().getHours()
+
+        if(hour >=0 && hour <16){
+            mealType= 'breakfast';
+        } else if (hour >=12 && hour <16){
+            mealType= 'lunch';
+        } else if (hour >=16 && hour <18){
+            mealType= 'snacks';
+        } else if (hour >=18 && hour <24){
+            mealType= 'dinner';
+        }
+
+        if(!mealType || !result.name || !result.calories){
+            return toast.error('Missing Data')
+        }
+
+        //Save the result to the database
+        const{data: newEntry} = await api.post(`/api/food-logs`, {data: {name: result.name, calories: result.calories, mealType}})
+        setEntries([...entries, newEntry])
+
+        // reset input
+        if(inputRef.current){
+            inputRef.current.value= ''
+        } 
+     }catch(error:any){
+        console.log(error);
+        toast.error(error?.response?.data?.error?.message || error?.message);
+    }finally{
+        setLoading(false);
+    }
 
     }
 

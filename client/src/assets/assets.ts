@@ -61,28 +61,28 @@ export const mealTypeOptions = [
     { value: "breakfast", label: "🌅 Breakfast" },
     { value: "lunch", label: "☀️ Lunch" },
     { value: "dinner", label: "🌙 Dinner" },
-    { value: "snack", label: "🍪 Snack" },
+    { value: "snacks", label: "🍪 Snacks" },
 ];
 
 export const quickActivitiesFoodLog = [
     { name: "breakfast", emoji: "🌮" },
     { name: "lunch", emoji: "🌅" },
     { name: "dinner", emoji: "🌙" },
-    { name: "snack", emoji: "🍪" },
+    { name: "snacks", emoji: "🍪" },
 ];
 
 export const mealColors = {
     breakfast: "bg-amber-100 text-amber-600",
     lunch: "bg-orange-100 text-orange-600",
     dinner: "bg-indigo-100 text-indigo-600",
-    snack: "bg-pink-100 text-pink-600",
+    snacks: "bg-pink-100 text-pink-600",
 };
 
 export const mealIcons = {
     breakfast: CoffeeIcon,
     lunch: SunIcon,
     dinner: MoonIcon,
-    snack: CookieIcon,
+    snacks: CookieIcon,
 };
 
 export const goalOptions = [
