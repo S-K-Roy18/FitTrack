@@ -9,10 +9,9 @@ import { ThemeProvider } from "./context/ThemeContext";
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
     <ThemeProvider>
-    <AppProvider>
-    <App />
-    </AppProvider>
+      <AppProvider>
+        <App />
+      </AppProvider>
     </ThemeProvider>
-    <App />
   </BrowserRouter>,
 )

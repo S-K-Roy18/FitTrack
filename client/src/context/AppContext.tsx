@@ -33,7 +33,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
    api.defaults.headers.common['Authorization']=`Bearer ${data.jwt}`
     } catch (error: any){
       console.log(error);
-      toast.error(error?.respons?.data?.error?.message || error?.message)
+      toast.error(error?.response?.data?.error?.message || error?.message)
     }
   };
 
@@ -55,13 +55,13 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   const fetchUser = async (token: string) => {
     try{
-      const { data } = await api.get('/api/user/me', {headers: {Authorization: `Bearer ${token}`}})
+      const { data } = await api.get('/api/users/me', {headers: {Authorization: `Bearer ${token}`}})
     setUser({ ...data, token });
 
     if (data?.age && data?.weight && data?.goal) {
       setOnboardingComplete(true);
     }
-    api.defaults.headers.common['Authorization']=`Bearer $ {token}`;
+    api.defaults.headers.common['Authorization']=`Bearer ${token}`;
     }    catch(error: any){
       console.log(error);
       toast.error(error?.response?.data?.error?.message || error?.message)

@@ -7,7 +7,7 @@ import Button from "../components/ui/Button";
 import { Loader2Icon, PlusIcon, SparkleIcon, Trash2Icon, UtensilsCrossedIcon } from "lucide-react";
 import Input from "../components/ui/Input";
 import Select from "../components/ui/Select";
-import mockApi from "../assets/mockApi";
+
 import { toast } from "react-hot-toast/headless";
 import api from "../configs/api";
 
@@ -125,7 +125,8 @@ const FoodLog= () => {
 
         //Save the result to the database
         const{data: newEntry} = await api.post(`/api/food-logs`, {data: {name: result.name, calories: result.calories, mealType}})
-        setEntries([...entries, newEntry])
+        
+        setAllFoodLogs(prev => [...prev, newEntry]);
 
         // reset input
         if(inputRef.current){
@@ -239,7 +240,7 @@ const FoodLog= () => {
                     <div className="space-y-4">
                         {['breakfast', 'lunch', 'dinner', 'snacks'].map((mealType) => {
                             const mealTypeKey =mealType as keyof typeof groupedEntries;
-                            if(!groupedEntries[mealTypeKey] ) return null;
+                            if(groupedEntries[mealTypeKey].length===0 ) return null;
 
                             const MealIcon= mealIcons[mealTypeKey];
                             const mealCalories = groupedEntries[mealTypeKey].reduce((sum, e) => sum + e.calories, 0);

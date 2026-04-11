@@ -2,9 +2,9 @@ import { ArrowLeft, ArrowRight, PersonStanding, ScaleIcon, Target, User } from "
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useAppContext } from "../context/AppContext";
-import type { ProfileFormData, UserData } from "../types";
+import type { ProfileFormData } from "../types";
 import Input from "../components/ui/Input";
-import mockApi from "../assets/mockApi";
+
 import { ageRanges, goalOptions } from "../assets/assets";
 import Slider from "../components/ui/Slider";
 import api from "../configs/api";
@@ -12,7 +12,7 @@ import api from "../configs/api";
 
 const Onboarding= () => {
     const [step, setStep] = useState(1);
-    const {user, setUser, setOnboardingComplete} = useAppContext();
+    const {user, setOnboardingComplete} = useAppContext();
     const [formData, setFormData] = useState<ProfileFormData>({
         age: 0,
         weight: 0,

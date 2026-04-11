@@ -21,27 +21,38 @@ export default factories.createCoreController('api::activity-log.activity-log', 
         return entry;
     },
     async find(ctx) {
-        const user =ctx.state.user
+        const user =ctx.state.user;
+
+        if (!user) {
+            return ctx.unauthorized("Login required");
+         }
 
         const result = await strapi.entityService.findMany(
             "api::activity-log.activity-log", {
-                filters: {users_permissions_user: user.id},
+                filters: {users_permissions_user: {id: user.id}},
                 populate: ["users_permissions_user"]
             }
-        )
+        );
         return result;
     },
     async findOne(ctx) {
         const user =ctx.find.user;
+
+        if (!user) {
+             return ctx.unauthorized("Login required");
+        }
+
         const {id} = ctx.params;
 
         const result = await strapi.entityService.findMany(
             "api::activity-log.activity-log", {
-                filters: {id, users_permissions_user: user.id},
+                filters: {id, users_permissions_user:{id: user.id}},
                 populate: ["users_permissions_user"]
             }
-        )
-        if(!result.length) return ctx.notFound("Not found or not yours")
+        );
+        if(!result.length) 
+            {return ctx.notFound("Not found or not yours");
+        }
         return result[0];
     }
 

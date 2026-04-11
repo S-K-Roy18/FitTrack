@@ -21,23 +21,30 @@ export default factories.createCoreController('api::food-log.food-log', ({strapi
         return entry;
     },
     async find(ctx) {
-        const user =ctx.find.user
+        const user =ctx.stae.user;
+
+        if (!user) {
+            return ctx.unauthorized("Login required");
+        }
 
         const result = await strapi.entityService.findMany(
             "api::food-log.food-log", {
-                filters: {users_permissions_user: user.id},
+                filters: {users_permissions_user:{id: user.id}},
                 populate: ["users_permissions_user"]
             }
         )
-        return result;
+        return result[0];
     },
     async findOne(ctx) {
-        const user =ctx.find.user;
+        const user =ctx.state.user;
+        if (!user) {
+             return ctx.unauthorized("Login required");
+        }
         const {id} = ctx.params;
 
         const result = await strapi.entityService.findMany(
             "api::food-log.food-log", {
-                filters: {id, users_permissions_user: user.id},
+                filters: {id, users_permissions_user:{id: user.id}},
                 populate: ["users_permissions_user"]
             }
         )
