@@ -21,39 +21,52 @@ export default factories.createCoreController('api::activity-log.activity-log', 
         return entry;
     },
     async find(ctx) {
-        const user =ctx.state.user;
+  const user = ctx.state.user;
 
-        if (!user) {
-            return ctx.unauthorized("Login required");
-         }
+  // ✅ Prevent crash
+  if (!user) {
+    return [];
+  }
 
-        const result = await strapi.entityService.findMany(
-            "api::activity-log.activity-log", {
-                filters: {users_permissions_user: {id: user.id}},
-                populate: ["users_permissions_user"]
-            }
-        );
-        return result;
-    },
-    async findOne(ctx) {
-        const user =ctx.find.user;
-
-        if (!user) {
-             return ctx.unauthorized("Login required");
-        }
-
-        const {id} = ctx.params;
-
-        const result = await strapi.entityService.findMany(
-            "api::activity-log.activity-log", {
-                filters: {id, users_permissions_user:{id: user.id}},
-                populate: ["users_permissions_user"]
-            }
-        );
-        if(!result.length) 
-            {return ctx.notFound("Not found or not yours");
-        }
-        return result[0];
+  const result = await strapi.entityService.findMany(
+    "api::activity-log.activity-log",
+    {
+      filters: {
+        users_permissions_user: {
+          id: user.id,
+        },
+      },
+      populate: ["users_permissions_user"],
     }
+  );
+
+  return result;
+},
+    async findOne(ctx) {
+  const user = ctx.state.user;
+
+  if (!user) {
+    return ctx.unauthorized("Login required");
+  }
+
+  const { id } = ctx.params;
+
+  const result = await strapi.entityService.findMany(
+    "api::activity-log.activity-log",
+    {
+      filters: {
+        id,
+        users_permissions_user: {
+          id: user.id,
+        },
+      },
+      populate: ["users_permissions_user"],
+    }
+  );
+
+  if (!result.length) return ctx.notFound("Not found");
+
+  return result[0];
+}
 
 }));

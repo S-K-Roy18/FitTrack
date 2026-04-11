@@ -20,13 +20,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   );
 
   useEffect(() => {
-    const root = document.documentElement;
+  const root = document.documentElement;
 
-    root.classList.remove("light", "dark"); // FIXED
-    root.classList.add(theme);
+  if (theme === "dark") {
+    root.classList.add("dark");
+  } else {
+    root.classList.remove("dark");
+  }
 
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+  localStorage.setItem("theme", theme);
+}, [theme]);
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));

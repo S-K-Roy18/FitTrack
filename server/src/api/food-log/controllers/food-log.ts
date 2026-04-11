@@ -10,7 +10,7 @@ export default factories.createCoreController('api::food-log.food-log', ({strapi
 
         if(!user) return ctx.unauthorized('Login required')
             const body= ctx.request.body.data;
-        body.users_permission_user = user.id;
+        body.users_permissions_user = user.id;
 
         const entry = await strapi.entityService.create(
             "api::food-log.food-log", {
@@ -21,20 +21,37 @@ export default factories.createCoreController('api::food-log.food-log', ({strapi
         return entry;
     },
     async find(ctx) {
-        const user =ctx.stae.user;
+  const user = ctx.state.user;
 
-        if (!user) {
-            return ctx.unauthorized("Login required");
-        }
+  // ✅ prevent crash
+  if (!user) {
+    return [];
+  }
 
-        const result = await strapi.entityService.findMany(
-            "api::food-log.food-log", {
-                filters: {users_permissions_user:{id: user.id}},
-                populate: ["users_permissions_user"]
-            }
-        )
-        return result[0];
-    },
+  const result = await strapi.entityService.findMany(
+    "api::food-log.food-log",
+    {
+      filters: {
+        users_permissions_user: {
+          id: user.id,
+        },
+      },
+      populate: ["users_permissions_user"],
+    }
+  );
+
+  // 🔥 FLATTEN DATA (VERY IMPORTANT)
+const formatted = result.map((item: any) => ({
+  id: item.id,
+  documentId: item.documentId,
+  name: item.name,
+  calories: item.calories,
+  mealType: item.mealType,
+  createdAt: item.createdAt,
+}));
+
+return formatted;
+},
     async findOne(ctx) {
         const user =ctx.state.user;
         if (!user) {

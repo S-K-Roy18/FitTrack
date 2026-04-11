@@ -62,6 +62,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       setOnboardingComplete(true);
     }
     api.defaults.headers.common['Authorization']=`Bearer ${token}`;
+    
     }    catch(error: any){
       console.log(error);
       toast.error(error?.response?.data?.error?.message || error?.message)
@@ -71,7 +72,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   const fetchFoodLogs = async (token: string) => {
     try{
-      const{data}= await api.get('/api/food-logs', {headers: {Authorization: `Bearer ${token}`}})
+      const{data}= await api.get('/api/food-logs', {headers: {Authorization: `Bearer ${token}`}});
+      console.log("FOOD API RESPONSE:", data); // 👈 ADD THIS
       setAllFoodLogs(data)
     }catch(error:any){
       console.log(error);
@@ -101,13 +103,17 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const token = localStorage.getItem("token");
 
   if (token) {
+    // ✅ SET TOKEN FIRST (IMPORTANT)
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
     (async () => {
-      
       await fetchUser(token);
       await fetchFoodLogs(token);
       await fetchActivityLogs(token);
     })();
-  } 
+  } else {
+    setIsUserFetched(true);
+  }
 }, []);
 
 

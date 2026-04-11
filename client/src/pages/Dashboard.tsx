@@ -141,7 +141,7 @@ const Dashboard= () => {
 
                 {/* Goal Card */}
                 {user &&( //This card will span both columns o large screens
-                    <Card className="bg-linear-to-r from-slate-800 to-slate-700">
+                    <Card className="bg-gradient-to-r from-slate-800 to-slate-700">
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
                                 <TrendingUpIcon className="w-6 h-6 text-emerald-400"/>

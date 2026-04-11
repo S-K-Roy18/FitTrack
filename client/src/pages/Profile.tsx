@@ -38,18 +38,30 @@ const Profile= () => {
         })();
     },[user])
 
-    const handleSave =async ()=>{
-        try{
-            await api.put(`/api/users/${user?.id}`, formData)
-            await fetchUser(user?.id || '')
-            toast.success('Profile updated successfully.')
-        } catch(error: any){
-            console.log(error);
-            toast.error(error?.message || "failed to update profile.")
+    const handleSave = async () => {
+  try {
+    const token = localStorage.getItem("token");
 
+    await api.put(
+      `/api/users/${user?.id}`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-        setIsEditing(false)
-    }
+      }
+    );
+
+    await fetchUser(token || "");
+
+    toast.success("Profile updated successfully.");
+  } catch (error: any) {
+    console.log(error);
+    toast.error(error?.response?.data?.error?.message || "Failed to update profile.");
+  }
+
+  setIsEditing(false);
+};
 
     const getStats= ()=>{
         const totalFoodEntries = allFoodLogs?.length || 0;
